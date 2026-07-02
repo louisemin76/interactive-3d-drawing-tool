@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive 3D Drawing Tool</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <canvas class="webgl"></canvas>
+    
+    
+    <button class="info-button">i</button>
+
+    <div class="bottom-toolbar">
+        <div class="brush-group">
+            <button class="brush-button" data-brush="fence">
+                <img class="brush-icon fence-icon" src="/icon-Fence.svg" alt="Fence brush" />
+            </button>
+            <button class="brush-button"></button>
+            <button class="brush-button"></button>
+        </div>
+
+        <div class="divider"></div>
+
+        <button class="clear-button">CLEAR</button>
+    </div>
+
+    <script type="module" src="./script.js"></script>
+</body>
+</html>

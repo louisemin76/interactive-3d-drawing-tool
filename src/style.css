@@ -1,0 +1,141 @@
+:root {
+  --ui-scale: 1.6;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+.webgl {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+}
+
+.bottom-toolbar,
+.info-button,
+.info-panel {
+  position: fixed;
+  z-index: 10;
+}
+
+.info-button {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+
+  width: 18px;
+  height: 18px;
+
+  transform: scale(var(--ui-scale));
+  transform-origin: top right;
+
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #666;
+  color: white;
+
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+.bottom-toolbar {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%) scale(var(--ui-scale));
+  transform-origin: bottom center;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 6px 8px;
+
+  background: #ababab;
+  border-radius: 14px;
+}
+/* Brush */
+.brush-group {
+  display: flex;
+  gap: 6px;
+}
+
+.brush-button {
+  width: 36px;
+  height: 26px;
+
+  border: 2px solid transparent;
+  border-radius: 11px;
+
+  background: #e4e4e4;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.brush-icon {
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.brush-button.active {
+  border-color: #713a2a;
+}
+
+/* Divider */
+.divider {
+  width: 2px;
+  height: 26px;
+  background: #999;
+}
+
+/* Clear */
+.clear-button {
+  width: 72px;
+  height: 26px;
+
+  padding: 0;
+
+  border: none;
+  border-radius: 11px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: white;
+  color: #444;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  background: #959595;
+  color: #fff;
+}
