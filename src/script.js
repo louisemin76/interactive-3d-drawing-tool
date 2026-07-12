@@ -4,20 +4,30 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 const scene = new THREE.Scene()
-scene.background = new THREE.Color('#d8d8d8')
+scene.background = new THREE.Color('#d1e4f2')
 let currentBrush = null
+const infoButton = document.querySelector('.info-button')
+const infoPanel = document.querySelector('.info-panel')
 
-//Loader
-const loader = new GLTFLoader()
-let brushModel = null
+infoButton.addEventListener('click', () => {
+  const isOpen = infoPanel.classList.toggle('open')
 
-loader.load('/models/fence.glb', (gltf) => {
-  brushModel = gltf.scene
-  brushModel.scale.set(0.5, 0.5, 0.5)
+  infoButton.setAttribute('aria-expanded', String(isOpen))
+  infoPanel.setAttribute('aria-hidden', String(!isOpen))
 })
 
-function placeModelsAlongLine(points) {
-  if (!brushModel) return
+// =========================
+// Fence Brush Asset
+// =========================
+const gltfLoader = new GLTFLoader()
+let fenceModel = null
+  gltfLoader.load('/models/fence.glb', (gltf) => {
+  fenceModel = gltf.scene
+  fenceModel.scale.set(0.5, 0.5, 0.5)
+})
+
+function placeFenceAlongLine(points) {
+  if (!fenceModel) return
 
   const spacing = 1.2
   let distanceSinceLastModel = 0
@@ -30,7 +40,7 @@ function placeModelsAlongLine(points) {
     distanceSinceLastModel += segmentLength
 
     if (distanceSinceLastModel >= spacing) {
-      const model = brushModel.clone(true)
+      const model = fenceModel.clone(true)
 
       model.position.copy(curr)
 
@@ -56,7 +66,7 @@ window.addEventListener('pointerup', (event) => {
   
   if (event.button !== 0) return
 
-  placeModelsAlongLine(currentPoints)
+  placeFenceAlongLine(currentPoints)
 
   isDrawing = false
   currentPoints = []
@@ -70,7 +80,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 )
-camera.position.set(0, 15, 20)
+camera.position.set(0, 15, 35)
 camera.lookAt(0, 0, 0)
 
 // Renderer
@@ -82,6 +92,7 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2))
+renderer.shadowMap.enabled = true
 
 
 // Controller
@@ -94,29 +105,33 @@ controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE
 controls.mouseButtons.MIDDLE = THREE.MOUSE.PAN
 
 // Lights
-const light = new THREE.DirectionalLight(0xffffff, 1)
-light.position.set(10, 20, 10)
+const light = new THREE.DirectionalLight(0xffffff, 2)
+light.position.set(15, 25, 10)
+light.castShadow = true
 scene.add(light)
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
+const ambientLight = new THREE.AmbientLight(0xfff4df, 0.8)
 scene.add(ambientLight)
 
 // Ground
-const gridHelper = new THREE.GridHelper(40, 40)
+const gridHelper = new THREE.GridHelper(80, 80, 0x8d765e, 0xa88b6f)
 scene.add(gridHelper)
 
 // 可绘画的平面
 const planeMesh = new THREE.Mesh(
-  new THREE.PlaneGeometry(40, 40),
+  new THREE.PlaneGeometry(80, 80),
   new THREE.MeshBasicMaterial({
-    color: '#e9e9e9',
+    color: '#b89c83',
     transparent: true,
-    opacity: 0.15,
+    roughness: 1,
+    metalness: 0,
+    opacity: 0.7,
     side: THREE.DoubleSide
   })
 )
 planeMesh.rotation.x = -Math.PI / 2
 scene.add(planeMesh)
+planeMesh.receiveShadow = true
 
 // 
 const raycaster = new THREE.Raycaster()
@@ -192,17 +207,25 @@ window.addEventListener('resize', () => {
 
 })
 
+//BrushButtons
 const brushButtons = document.querySelectorAll('.brush-button')
 
 brushButtons.forEach((button) => {
   button.addEventListener('click', () => {
-    currentBrush = button.dataset.brush
+    if (button.classList.contains('active')) {
+
+        button.classList.remove('active')
+        currentBrush = null
+
+        return
+    }
 
     brushButtons.forEach((btn) => {
       btn.classList.remove('active')
     })
 
     button.classList.add('active')
+    currentBrush = button.dataset.brush
   })
 })
 

@@ -10,7 +10,37 @@
     <canvas class="webgl"></canvas>
     
     
-    <button class="info-button">i</button>
+    <button class="info-button" 
+            type="button"
+            aria-label="Open controls information"
+            aria-expanded="false"
+    >
+            i
+    </button>
+
+    <aside class="info-panel" aria-hidden="true">
+        <h2>Controls</h2>
+
+        <div class="control-row">
+            <span>Left Mouse Button</span>
+            <span>Draw</span>
+        </div>
+
+        <div class="control-row">
+            <span>Right Mouse Button</span>
+            <span>Rotate</span>
+        </div>
+
+        <div class="control-row">
+            <span>Middle Mouse Button</span>
+            <span>Pan</span>
+        </div>
+
+        <div class="control-row">
+            <span>Mouse Wheel</span>
+            <span>Zoom</span>
+        </div>
+    </aside>
 
     <div class="bottom-toolbar">
         <div class="brush-group">
