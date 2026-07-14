@@ -5,6 +5,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 
 const scene = new THREE.Scene()
 scene.background = new THREE.Color('#d1e4f2')
+const generatedObjects = new THREE.Group()
+scene.add(generatedObjects)
 let currentBrush = null
 const infoButton = document.querySelector('.info-button')
 const infoPanel = document.querySelector('.info-panel')
@@ -16,13 +18,42 @@ infoButton.addEventListener('click', () => {
   infoPanel.setAttribute('aria-hidden', String(!isOpen))
 })
 
+//Material
+const fenceMaterial = new THREE.MeshStandardMaterial({
+  color: '#b8875b',
+  roughness: 0.8,
+  metalness: 0
+})
+
+const grassMaterial = new THREE.MeshStandardMaterial({
+  color: '#6f8f55',
+  roughness: 0.9,
+  metalness: 0,
+  side: THREE.DoubleSide
+})
+
+const stoneMaterial = new THREE.MeshStandardMaterial({
+  color: '#77756f',
+  roughness: 1,
+  metalness: 0
+})
+
 // =========================
 // Fence Brush Asset
 // =========================
 const gltfLoader = new GLTFLoader()
 let fenceModel = null
-  gltfLoader.load('/models/fence.glb', (gltf) => {
+  gltfLoader.load('/models/Fence.glb', (gltf) => {
   fenceModel = gltf.scene
+  
+  fenceModel.traverse((child) => {
+    if (child.isMesh) {
+      child.material = fenceMaterial
+      child.castShadow = true
+      child.receiveShadow = true
+    }
+  })
+
   fenceModel.scale.set(0.5, 0.5, 0.5)
 })
 
@@ -40,9 +71,9 @@ function placeFenceAlongLine(points) {
     distanceSinceLastModel += segmentLength
 
     if (distanceSinceLastModel >= spacing) {
-      const model = fenceModel.clone(true)
+      const fence = fenceModel.clone(true)
 
-      model.position.copy(curr)
+      fence.position.copy(curr)
 
       const direction = new THREE.Vector3()
         .subVectors(curr, prev)
@@ -50,23 +81,172 @@ function placeFenceAlongLine(points) {
 
       const defaultDirection = new THREE.Vector3(1, 0, 0)
 
-      model.quaternion.setFromUnitVectors(defaultDirection, direction)
+      fence.quaternion.setFromUnitVectors(defaultDirection, direction)
 
-      model.scale.set(0.5, 0.5, 0.5)
+      fence.scale.set(0.5, 0.5, 0.5)
 
-      scene.add(model)
+      generatedObjects.add(fence)
 
       distanceSinceLastModel = 0
     }
   }
 }
 
-window.addEventListener('pointerup', (event) => {
-  if (currentBrush !== 'fence') return
-  
-  if (event.button !== 0) return
+// =========================
+// Grass Brush Asset
+// =========================
+const grassModels = []
 
-  placeFenceAlongLine(currentPoints)
+const grassModelPaths = [
+  '/models/GrassCluster_A.glb',
+  '/models/GrassCluster_B.glb',
+  '/models/GrassCluster_C.glb',
+  '/models/GrassCluster_D.glb'
+]
+
+grassModelPaths.forEach((path) => {
+  gltfLoader.load(
+    path,
+    (gltf) => {
+      const grassModel = gltf.scene
+
+      grassModel.traverse((child) => {
+        if (child.isMesh) {
+          child.material = grassMaterial
+          child.castShadow = true
+          child.receiveShadow = true
+        }
+      })
+
+      grassModels.push(grassModel)
+    },
+    undefined,
+    (error) => {
+      console.error(`Failed to load grass model: ${path}`, error)
+    }
+  )
+})
+
+function placeGrassAlongLine(points) {
+  if (grassModels.length === 0) return
+  if (points.length < 2) return
+
+  const spacing = 0.8
+  const spreadRadius = 0.15
+
+  let distanceSinceLastGrass = 0
+
+  for (let i = 1; i < points.length; i++) {
+    const previousPoint = points[i - 1]
+    const currentPoint = points[i]
+
+    const segmentLength = previousPoint.distanceTo(currentPoint)
+    distanceSinceLastGrass += segmentLength
+
+    if (distanceSinceLastGrass >= spacing) {
+      const grassCount = THREE.MathUtils.randInt(1, 3)
+
+      for (let j = 0; j < grassCount; j++) {
+        const randomModelIndex = Math.floor(
+          Math.random() * grassModels.length
+        )
+
+        const grass = grassModels[randomModelIndex].clone(true)
+
+        const offsetX = THREE.MathUtils.randFloat(
+          -spreadRadius,
+          spreadRadius
+        )
+
+        const offsetZ = THREE.MathUtils.randFloat(
+          -spreadRadius,
+          spreadRadius
+        )
+
+        grass.position.set(
+          currentPoint.x + offsetX,
+          currentPoint.y,
+          currentPoint.z + offsetZ
+        )
+
+        grass.rotation.y = Math.random() * Math.PI * 2
+
+        const randomScale = THREE.MathUtils.randFloat(0.7, 1.25)
+        grass.scale.setScalar(randomScale)
+
+        generatedObjects.add(grass)
+      }
+
+      distanceSinceLastGrass = 0
+    }
+  }
+}
+
+// =========================
+// Stone Brush Asset
+// =========================
+
+let stoneModel = null
+const stonePositions = []
+
+gltfLoader.load(
+  '/models/Stone.glb',
+  (gltf) => {
+    stoneModel = gltf.scene
+
+    stoneModel.traverse((child) => {
+      if (child.isMesh) {
+        child.material = stoneMaterial
+        child.castShadow = true
+        child.receiveShadow = true
+      }
+    })
+  },
+  undefined,
+  (error) => {
+    console.error('Failed to load stone model:', error)
+  }
+)
+
+function placeStoneAtPoint(point) {
+  if (!stoneModel) return
+
+  const minimumDistance = 1.2
+
+  const isTooClose = stonePositions.some((position) => {
+    return position.distanceTo(point) < minimumDistance
+  })
+
+  if (isTooClose) return
+
+  const stone = stoneModel.clone(true)
+
+  stone.position.copy(point)
+
+  stone.rotation.y = Math.random() * Math.PI * 2
+
+  const randomScale = THREE.MathUtils.randFloat(0.4, 0.8)
+  stone.scale.setScalar(randomScale)
+
+  generatedObjects.add(stone)
+
+  stonePositions.push(point.clone())
+}
+
+
+window.addEventListener('pointerup', (event) => {
+  if (event.button !== 0) return
+  if (!isDrawing) return
+  
+  if (currentBrush === 'fence') {
+    placeFenceAlongLine(currentPoints)
+    generatedObjects.remove(currentLine)
+  }
+  
+  if (currentBrush === 'grass') {
+    placeGrassAlongLine(currentPoints)
+    generatedObjects.remove(currentLine)
+  }
 
   isDrawing = false
   currentPoints = []
@@ -162,8 +342,6 @@ window.addEventListener('pointerdown', (event) => {
   //只在按下按钮后画线
   if (event.target.closest('.bottom-toolbar, .info-button, .info-panel')) return
   
-  if (currentBrush !== 'fence') return
-
   // 只允许左键画线
   if (event.button !== 0) return
 
@@ -173,15 +351,24 @@ window.addEventListener('pointerdown', (event) => {
   isDrawing = true
   currentPoints = [point]
 
+  if (currentBrush === 'stone') {
+    placeStoneAtPoint(point)
+    return
+  }  
+
+  if (currentBrush !== 'fence' && 
+      currentBrush !== 'grass' ) return
+   
   const geometry = new THREE.BufferGeometry().setFromPoints(currentPoints)
-  const material = new THREE.LineBasicMaterial({ color: '#00000000' })
+  const material = new THREE.LineBasicMaterial({ color: '#00000000', transparent: true, opacity: 1 })
 
   currentLine = new THREE.Line(geometry, material)
-  scene.add(currentLine)
+  generatedObjects.add(currentLine)
 })
 
 window.addEventListener('pointermove', (event) => {
-  if (currentBrush !== 'fence') return
+  if (currentBrush !== 'fence' &&
+      currentBrush !== 'grass' ) return
 
   if (!isDrawing || !currentLine) return
 
@@ -233,7 +420,8 @@ brushButtons.forEach((button) => {
 const clearButton = document.querySelector('.clear-button')
 
 clearButton.addEventListener('click', () => {
-    location.reload()
+    generatedObjects.clear()
+    stonePositions.length = 0
 })
 
 function animate() {
