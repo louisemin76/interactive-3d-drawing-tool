@@ -43,19 +43,26 @@ const stoneMaterial = new THREE.MeshStandardMaterial({
 // =========================
 const gltfLoader = new GLTFLoader()
 let fenceModel = null
-  gltfLoader.load('/models/Fence.glb', (gltf) => {
-  fenceModel = gltf.scene
-  
-  fenceModel.traverse((child) => {
-    if (child.isMesh) {
-      child.material = fenceMaterial
-      child.castShadow = true
-      child.receiveShadow = true
-    }
-  })
+gltfLoader.load(
+  '/models/fence.glb',
+  (gltf) => {
+    fenceModel = gltf.scene
 
-  fenceModel.scale.set(0.5, 0.5, 0.5)
-})
+    fenceModel.traverse((child) => {
+      if (child.isMesh) {
+        child.material = fenceMaterial
+        child.castShadow = true
+        child.receiveShadow = true
+      }
+    })
+
+    fenceModel.scale.set(0.5, 0.5, 0.5)
+  },
+  undefined,
+  (error) => {
+    console.error('Failed to load fence model:', error)
+  }
+)
 
 function placeFenceAlongLine(points) {
   if (!fenceModel) return
@@ -190,7 +197,7 @@ let stoneModel = null
 const stonePositions = []
 
 gltfLoader.load(
-  '/models/Stone.glb',
+  '/models/stone.glb',
   (gltf) => {
     stoneModel = gltf.scene
 
