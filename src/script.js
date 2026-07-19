@@ -551,6 +551,19 @@ function finishLayoutTour() {
   tourCard.style.display = 'none'
 
   creationGuide.classList.remove('hidden')
+
+  const demoVideos = creationGuide.querySelectorAll('video')
+
+  requestAnimationFrame(() => {
+    demoVideos.forEach((video) => {
+      video.currentTime = 0
+      video.muted = true
+
+      video.play().catch((error) => {
+        console.warn('Demo video could not autoplay:', error)
+      })
+    })
+  })
 }
 
 tourNextButton.addEventListener('click', () => {
@@ -577,6 +590,10 @@ showTourStep(0)
 
 creationStartButton.addEventListener('click', () => {
   creationGuide.classList.add('hidden')
+
+  creationGuide.querySelectorAll('video').forEach((video) => {
+    video.pause()
+  })
 })
 
 animate()
