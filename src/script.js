@@ -10,6 +10,8 @@ scene.add(generatedObjects)
 let currentBrush = null
 const infoButton = document.querySelector('.info-button')
 const infoPanel = document.querySelector('.info-panel')
+const creationGuide = document.querySelector('.creation-guide')
+const creationStartButton = document.querySelector('.creation-start')
 
 infoButton.addEventListener('click', () => {
   const isOpen = infoPanel.classList.toggle('open')
@@ -67,7 +69,7 @@ gltfLoader.load(
 function placeFenceAlongLine(points) {
   if (!fenceModel) return
 
-  const spacing = 1.2
+  const spacing = 1.0
   let distanceSinceLastModel = 0
 
   for (let i = 1; i < points.length; i++) {
@@ -218,7 +220,7 @@ gltfLoader.load(
 function placeStoneAtPoint(point) {
   if (!stoneModel) return
 
-  const minimumDistance = 1.2
+  const minimumDistance = 1.0
 
   const isTooClose = stonePositions.some((position) => {
     return position.distanceTo(point) < minimumDistance
@@ -436,5 +438,145 @@ function animate() {
   controls.update()
   renderer.render(scene, camera)
 }
+
+//Guided Tour
+const tourSteps = [
+  {
+    target: '.brush-group',
+    title: 'Choose a Brush',
+    text: 'Select a brush from the toolbar to create 3D objects.',
+    position: 'top'
+  },
+  {
+    target: '.clear-button',
+    title: 'Clear the Scene',
+    text: 'Remove all generated objects and start again.',
+    position: 'top'
+  },
+  {
+    target: '.info-button',
+    title: 'View Controls',
+    text: 'Open the information panel to view camera controls.',
+    position: 'bottom'
+  }
+]
+
+const tourBlocker = document.querySelector('.tour-blocker')
+const tourSpotlight = document.querySelector('.tour-spotlight')
+const tourCard = document.querySelector('.tour-card')
+
+const tourStepText = document.querySelector('.tour-step')
+const tourTitle = document.querySelector('.tour-title')
+const tourText = document.querySelector('.tour-text')
+
+const tourNextButton = document.querySelector('.tour-next')
+const tourSkipButton = document.querySelector('.tour-skip')
+
+let currentTourStep = 0
+
+function showTourStep(index) {
+  const step = tourSteps[index]
+  const targetElement = document.querySelector(step.target)
+
+  if (!targetElement) {
+    console.error(`Tour target not found: ${step.target}`)
+    return
+  }
+
+  const rect = targetElement.getBoundingClientRect()
+  const padding = 8
+
+  // Position the spotlight
+  tourSpotlight.style.left = `${rect.left - padding}px`
+  tourSpotlight.style.top = `${rect.top - padding}px`
+  tourSpotlight.style.width = `${rect.width + padding * 2}px`
+  tourSpotlight.style.height = `${rect.height + padding * 2}px`
+
+  // Update the text
+  tourStepText.textContent =
+    `${index + 1} / ${tourSteps.length}`
+
+  tourTitle.textContent = step.title
+  tourText.textContent = step.text
+
+  if (index === tourSteps.length - 1) {
+    tourNextButton.textContent = 'Finish'
+  } else {
+    tourNextButton.textContent = 'Next'
+  }
+
+  // Position the introduction card
+  requestAnimationFrame(() => {
+    const cardRect = tourCard.getBoundingClientRect()
+    const gap = 20
+
+    let left =
+      rect.left +
+      rect.width / 2 -
+      cardRect.width / 2
+
+    let top
+
+    if (step.position === 'bottom') {
+      top = rect.bottom + gap
+    } else {
+      top = rect.top - cardRect.height - gap
+    }
+
+    // Prevent the card from leaving the screen
+    left = Math.max(
+      16,
+      Math.min(
+        left,
+        window.innerWidth - cardRect.width - 16
+      )
+    )
+
+    top = Math.max(
+      16,
+      Math.min(
+        top,
+        window.innerHeight - cardRect.height - 16
+      )
+    )
+
+    tourCard.style.left = `${left}px`
+    tourCard.style.top = `${top}px`
+  })
+}
+
+function finishLayoutTour() {
+  tourBlocker.style.display = 'none'
+  tourSpotlight.style.display = 'none'
+  tourCard.style.display = 'none'
+
+  creationGuide.classList.remove('hidden')
+}
+
+tourNextButton.addEventListener('click', () => {
+  currentTourStep++
+
+  if (currentTourStep >= tourSteps.length) {
+    finishLayoutTour()
+    return
+  }
+
+  showTourStep(currentTourStep)
+})
+
+tourSkipButton.addEventListener('click', finishLayoutTour)
+
+window.addEventListener('resize', () => {
+  if (currentTourStep < tourSteps.length) {
+    showTourStep(currentTourStep)
+  }
+})
+
+// Start from the first step
+showTourStep(0)
+
+creationStartButton.addEventListener('click', () => {
+  creationGuide.classList.add('hidden')
+})
 
 animate()

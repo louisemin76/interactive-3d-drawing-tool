@@ -133,7 +133,7 @@ html, body {
   width: 36px;
   height: 26px;
 
-  border: 2px solid transparent;
+  border: 1.5px solid transparent;
   border-radius: 11px;
 
   background: #f0e9e9;
@@ -155,14 +155,14 @@ html, body {
 }
 
 .brush-button.active {
-  border-color: #668cd7;
+  border-color: #7680da;
 }
 
 /* Divider */
 .divider {
   width: 2px;
   height: 26px;
-  background: #e3c1c1;
+  background: #d7c2c2;
 }
 
 /* Clear */
@@ -190,5 +190,196 @@ html, body {
 
 .clear-button:hover {
   background: #f0d6d6;
-  color: #668cd7;
+  color: #606cc3;
+}
+
+.tour-blocker {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+}
+
+/* Tour Spotlight and Card */
+.tour-spotlight {
+  position: fixed;
+  z-index: 999;
+
+  border: 3px solid #f4eee7;
+  border-radius: 14px;
+
+  box-shadow:
+    0 0 0 9999px rgba(48, 46, 47, 0.62),
+    0 0 18px rgba(244, 238, 231, 0.45);
+
+  pointer-events: none;
+
+  transition:
+    top 0.3s ease,
+    left 0.3s ease,
+    width 0.3s ease,
+    height 0.3s ease;
+}
+
+.tour-card {
+  position: fixed;
+  z-index: 1000;
+
+  width: 250px;
+  padding: 18px;
+
+  color: #494342;
+  background: #f8f5f1;
+
+  border-radius: 14px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+
+  transition:
+    top 0.3s ease,
+    left 0.3s ease;
+}
+
+.tour-step {
+  margin: 0 0 8px;
+  color: #918985;
+  font-size: 12px;
+}
+
+.tour-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.tour-text {
+  margin: 0;
+  color: #716a67;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tour-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+.tour-skip,
+.tour-next,
+.guide-start {
+  padding: 8px 16px;
+
+  border: none;
+  border-radius: 10px;
+
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tour-skip {
+  color: #817976;
+  background: transparent;
+}
+
+.tour-next,
+.guide-start {
+  color: #faf6ea;
+  background: #7bb1d4;
+}
+
+/* Creation Guide */
+.creation-guide {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(48, 46, 47, 0.62);
+}
+
+.creation-guide.hidden {
+  display: none;
+}
+
+.creation-modal {
+  width: min(680px, calc(100vw - 48px));
+  padding: 28px;
+
+  color: #494342;
+  background: #f8f5f1;
+
+  border-radius: 18px;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.25);
+
+  text-align: center;
+}
+
+.creation-modal h2 {
+  margin: 0 0 22px;
+  font-size: 22px;
+}
+
+.creation-demos {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.creation-demo {
+  margin: 0;
+}
+
+.creation-demo video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+  background: #dedbd7;
+}
+
+.creation-demo figcaption {
+  margin-top: 10px;
+
+  color: #5c5552;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.creation-instruction {
+  margin: 22px 0 18px;
+
+  color: #716a67;
+  font-size: 14px;
+}
+
+.creation-start {
+  padding: 9px 22px;
+
+  border: none;
+  border-radius: 10px;
+
+  color: white;
+  background: #7487b8;
+
+  font-size: 14px;
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.creation-start:hover {
+  background: #6377aa;
+}
+
+@media (max-width: 600px) {
+  .creation-demos {
+    grid-template-columns: 1fr;
+  }
+
+  .creation-modal {
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+  }
 }
