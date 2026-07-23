@@ -8,79 +8,80 @@
     <link rel="icon" type="image/svg+xml" href="/icon-Fence.svg">
 </head>
 
-<!-- Layout tour -->
-<div class="tour-blocker"></div>
-<div class="tour-spotlight"></div>
 
-<section class="tour-card">
-    <p class="tour-step">1 / 3</p>
-
-    <h2 class="tour-title">Choose a Brush</h2>
-
-    <p class="tour-text">
-        Select a brush from the toolbar to create 3D objects.
-    </p>
-
-    <div class="tour-actions">
-        <button class="tour-skip" type="button">
-            Skip
-        </button>
-
-        <button class="tour-next" type="button">
-            Next
-        </button>
-    </div>
-</section>
-
-<!-- Creation Guide -->
-<div class="creation-guide hidden">
-    <section class="creation-modal">
-        <h2>How to Create</h2>
-
-        <div class="creation-demos">
-            <figure class="creation-demo">
-                <video
-                    src="/guide/draw-demo.mp4"
-                    alt="Drawing a line to create objects"
-                    autoplay
-                    muted
-                    loop
-                    playsinline
-                    preload="auto"
-                >
-                </video>
-                <figcaption>Draw a Line</figcaption>
-            </figure>
-
-            <figure class="creation-demo">
-                <video
-                    src="/guide/click-demo.mp4"
-                    alt="Clicking to create an object"
-                    autoplay
-                    muted
-                    loop
-                    playsinline
-                    preload="auto"
-                >
-                </video>
-                <figcaption>Click</figcaption>
-            </figure>
-        </div>
-
-        <p class="creation-instruction">
-            Draw a line or click on the ground to create objects.
-        </p>
-
-        <button class="creation-start" type="button">
-            Start Creating
-        </button>
-    </section>
-</div>
 
 <body>
     <canvas class="webgl"></canvas>
     
-    
+    <!-- Layout tour -->
+    <div class="tour-blocker"></div>
+    <div class="tour-spotlight"></div>
+
+    <section class="tour-card">
+        <p class="tour-step">1 / 3</p>
+
+        <h2 class="tour-title">Choose a Brush</h2>
+
+        <p class="tour-text">
+            Select a brush from the toolbar to create 3D objects.
+        </p>
+
+        <div class="tour-actions">
+            <button class="tour-skip" type="button">
+                Skip
+            </button>
+
+            <button class="tour-next" type="button">
+                Next
+            </button>
+        </div>
+    </section>
+
+    <!-- Creation Guide -->
+    <div class="creation-guide hidden">
+        <section class="creation-modal">
+            <h2>How to Create</h2>
+
+            <div class="creation-demos">
+                <figure class="creation-demo">
+                    <video
+                        src="/guide/draw-demo.mp4"
+                        alt="Drawing a line to create objects"
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        preload="auto"
+                    >
+                    </video>
+                    <figcaption>Draw a Line</figcaption>
+                </figure>
+
+                <figure class="creation-demo">
+                    <video
+                        src="/guide/click-demo.mp4"
+                        alt="Clicking to create an object"
+                        autoplay
+                        muted
+                        loop
+                        playsinline
+                        preload="auto"
+                    >
+                    </video>
+                    <figcaption>Click</figcaption>
+                </figure>
+            </div>
+
+            <p class="creation-instruction">
+                Draw a line or click on the ground to create objects.
+            </p>
+
+            <button class="creation-start" type="button">
+                Start Creating
+            </button>
+        </section>
+    </div>
+
     <button class="info-button" 
             type="button"
             aria-label="Open controls information"
