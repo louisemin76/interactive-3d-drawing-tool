@@ -243,25 +243,6 @@ function placeStoneAtPoint(point) {
 }
 
 
-window.addEventListener('pointerup', (event) => {
-  if (event.button !== 0) return
-  if (!isDrawing) return
-  
-  if (currentBrush === 'fence') {
-    placeFenceAlongLine(currentPoints)
-    generatedObjects.remove(currentLine)
-  }
-  
-  if (currentBrush === 'grass') {
-    placeGrassAlongLine(currentPoints)
-    generatedObjects.remove(currentLine)
-  }
-
-  isDrawing = false
-  currentPoints = []
-  currentLine = null
-})
-
 // Camera
 const camera = new THREE.PerspectiveCamera(
   30,
@@ -306,7 +287,7 @@ scene.add(ambientLight)
 const gridHelper = new THREE.GridHelper(80, 80, 0x8d765e, 0xa88b6f)
 scene.add(gridHelper)
 
-// 可绘画的平面
+// Drawable ground plane
 const planeMesh = new THREE.Mesh(
   new THREE.PlaneGeometry(80, 80),
   new THREE.MeshBasicMaterial({
@@ -322,11 +303,10 @@ planeMesh.rotation.x = -Math.PI / 2
 scene.add(planeMesh)
 planeMesh.receiveShadow = true
 
-// 
+// Raycasting and Drawing
 const raycaster = new THREE.Raycaster()
 const mouse = new THREE.Vector2()
 
-// y = 0 的平面，地面
 const drawPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0)
 
 let isDrawing = false
@@ -347,11 +327,30 @@ function getMouseWorldPosition(event) {
   return hit ? intersectPoint.clone() : null
 }
 
+window.addEventListener('pointerup', (event) => {
+  if (event.button !== 0) return
+  if (!isDrawing) return
+  
+  if (currentBrush === 'fence') {
+    placeFenceAlongLine(currentPoints)
+    generatedObjects.remove(currentLine)
+  }
+  
+  if (currentBrush === 'grass') {
+    placeGrassAlongLine(currentPoints)
+    generatedObjects.remove(currentLine)
+  }
+
+  isDrawing = false
+  currentPoints = []
+  currentLine = null
+})
+
 window.addEventListener('pointerdown', (event) => {
-  //只在按下按钮后画线
+  // Ignore interactions with UI elements
   if (event.target.closest('.bottom-toolbar, .info-button, .info-panel')) return
   
-  // 只允许左键画线
+  // Only allow drawing with the left mouse button
   if (event.button !== 0) return
 
   const point = getMouseWorldPosition(event)
